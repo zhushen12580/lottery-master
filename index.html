@@ -1075,7 +1075,10 @@
                         // 停止抽奖
                         this.running = false;
                         isSpinning = false;
-                        switchMusic(spinMusic, bgMusic); // 切换回背景音乐
+                        spinMusic.pause(); // 停止抽奖音乐
+                        spinMusic.currentTime = 0;
+                        bgMusic.pause(); // 暂停背景音乐
+                        
                         var ret = lottery(this.selected);
                         
                         if (ret && ret.length > 0) {
@@ -1089,6 +1092,11 @@
                             fireworkSound.currentTime = 0;
                             fireworkSound.volume = globalVolume;
                             fireworkSound.play();
+                            
+                            // 中奖音乐播放完后恢复背景音乐
+                            fireworkSound.onended = function() {
+                                switchMusic(null, bgMusic);
+                            };
                             
                             $('#result .result-content').html(ret.join(''));
                             $('#result').css('display', 'block');
