@@ -4,191 +4,876 @@
     <meta name="screen-orientation" content="portrait">
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0"/>
-    <title>年会抽奖小程序</title>
+    <title>2025年东莞市文锋硅胶公司年会抽奖</title>
     <link rel="stylesheet" type="text/css" href="css/reset.css">
     <link rel="stylesheet" type="text/css" href="css/wall.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="js/three.min.js"></script>
+    <script src="js/tween.umd.js"></script>
     <style type="text/css">
         body, html {
             width: 100%;
             height: 100%;
-            font-weight: bold; 
-        }
-        .result {
-            position: absolute;
-            height: 320px;
-            width: 100%;
-            left: 0; top: 50%;
-            margin-top: -160px;
-            text-align: center;
-            padding: 10px;
-            display: none;
-        }
-        .result span {
-            display: inline-block;
-            font-size: 25px;
-            width: 150px;
-            background: #cd1313;
-            line-height: 30px;
-            color: #000;
-            margin: 5px;
-            border-radius: 10px;
-            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.8);
-            padding: 10px 0;
-        }
-        button, input, optgroup, select, textarea {
-            color: inherit;
-            font: inherit;
+            font-family: 'Noto Sans SC', sans-serif;
             margin: 0;
-            border: none;
+            overflow: hidden;
+            background: #1a1a1a;
         }
-        button {
-            overflow: visible;
-        }
-        button, select {
-            text-transform: none;
-        }
-        button, html input[type=button], input[type=reset], input[type=submit] {
-            -webkit-appearance: button;
-            cursor: pointer;
-        }
-        .pure-button {
-            display: inline-block;
-            zoom: 1;
-            line-height: normal;
-            white-space: nowrap;
-            vertical-align: middle;
-            text-align: center;
-            cursor: pointer;
-            -webkit-user-drag: none;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-            -webkit-box-sizing: border-box;
-            -moz-box-sizing: border-box;
-            box-sizing: border-box;
-        }
-
-        .pure-button {
-            font-family: inherit;
-            font-size: 100%;
-            padding: .5em 1em;
-            color: #444;
-            color: rgba(0,0,0,.8);
-            border: 0 rgba(0,0,0,0);
-            background-color: #E6E6E6;
-            text-decoration: none;
-            border-radius: 2px;
-        }
-        .pure-button:focus {
-            outline: 0
-        }
-        .pure-button-hover, .pure-button:hover, .pure-button:focus {
-            filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#00000000', endColorstr='#1a000000', GradientType=0);
-            background-image: -webkit-gradient(linear,0 0,0 100%,from(transparent),color-stop(40%,rgba(0,0,0,.05)),to(rgba(0,0,0,.1)));
-            background-image: -webkit-linear-gradient(transparent,rgba(0,0,0,.05) 40%,rgba(0,0,0,.1));
-            background-image: -moz-linear-gradient(top,rgba(0,0,0,.05) 0,rgba(0,0,0,.1));
-            background-image: -o-linear-gradient(transparent,rgba(0,0,0,.05) 40%,rgba(0,0,0,.1));
-            background-image: linear-gradient(transparent,rgba(0,0,0,.05) 40%,rgba(0,0,0,.1));
-        }
-
-        .button-success, .button-error, .button-warning, .button-secondary {
-            color: white;
-            border-radius: 4px;
-            text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
-        }
-        .button-success {
-            background: rgb(28, 184, 65);
-        }
-        .button-error {
-            background: rgb(202, 60, 60);
-        }
-        .button-warning {
-            background: rgb(223, 117, 20);
-        }
-        .button-secondary {
-            background: rgb(229, 11, 11);
-        }
-        .tools {
+        
+        #canvas-container {
             position: absolute;
-            bottom: 20px;
-            right: 20px;
+            width: 100%;
+            height: 100%;
+            left: 0;
+            top: 0;
+            z-index: 1;
+        }
+        
+        .lottery-item {
+            position: absolute;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 15px;
+            color: #fff;
+            font-size: 16px;
+            pointer-events: none;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            text-shadow: 0 0 15px rgba(255, 0, 0, 0.4);
+            backdrop-filter: blur(5px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            opacity: 0;
+            transform: scale(0);
+            z-index: 2;
+            white-space: nowrap;
+            left: 0;
+            top: 0;
+            letter-spacing: 1px;
+        }
+        
+        .lottery-item.show {
+            opacity: 1;
+            transform: scale(1) translateZ(0);
+        }
+        
+        .lottery-item.selected {
+            color: #ffd700;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+            background: rgba(255, 215, 0, 0.2);
+            border-color: rgba(255, 215, 0, 0.4);
+            animation: selectedPulse 2s infinite;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+        
+        @keyframes selectedPulse {
+            0%, 100% {
+                box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+            }
+            50% {
+                box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+            }
+        }
+        
+        .result {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.95);
+            width: 80%;
+            max-width: 800px;
             text-align: center;
+            z-index: 1000;
+            display: none;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 24px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            opacity: 0;
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .tools .pure-button {
-            display: inline-block;
-            margin: 5px;
-            padding: 10px 0;
-            text-align: center;
-            width:50px;
+        
+        .result.show {
+            display: block;
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
         }
-        .mask {
-            -webkit-filter:blur(5px);
-            filter:blur(5px);
+        
+        .result-content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            padding: 20px;
+            animation: contentFadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
-        #main {
-            -webkit-transition: all 1s;
-            transition: all 1s;
+        
+        @keyframes contentFadeIn {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
         }
-        .result-btn {
-            margin-top: 20px;
-            text-align: right;
-            margin-right: 30px;
-            text-decoration: none;
+        
+        .winner {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px 32px;
+            background: rgba(255, 215, 0, 0.15);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 16px;
+            color: #ffd700;
+            font-size: 24px;
+            font-weight: 600;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+            animation: winnerPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            opacity: 0;
+            transform: scale(0.8);
+            letter-spacing: 1px;
+            box-shadow: 0 8px 32px rgba(255, 215, 0, 0.2);
+            backdrop-filter: blur(10px);
+        }
+        
+        @keyframes winnerPop {
+            0% { opacity: 0; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        
+        .firework {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            pointer-events: none;
+            filter: blur(3px) brightness(1.8);
+            mix-blend-mode: screen;
+            box-shadow: 0 0 30px currentColor;
+            animation: launch 1.2s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+            transform-origin: center;
+        }
+
+        @keyframes launch {
+            0% {
+                transform: translate(0, 100vh) scale(0.6);
+                opacity: 1;
+            }
+            50% {
+                transform: translate(var(--tx), var(--ty)) scale(1.2);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--tx), var(--ty)) scale(0);
+                opacity: 0;
+            }
+        }
+        
+        .particle {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            pointer-events: none;
+            filter: blur(2px) brightness(1.5);
+            mix-blend-mode: screen;
+            box-shadow: 0 0 25px currentColor;
+            opacity: 0;
+            animation: particle 2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
+        @keyframes particle {
+            0% {
+                transform: translate(0, 0) scale(0);
+                opacity: 0;
+                filter: blur(2px) brightness(1.5);
+            }
+            5% {
+                opacity: 1;
+                transform: translate(0, 0) scale(1.2);
+            }
+            60% {
+                opacity: 0.9;
+                filter: blur(3px) brightness(1.8);
+            }
+            100% {
+                transform: translate(var(--tx), var(--ty)) scale(0);
+                opacity: 0;
+                filter: blur(4px) brightness(1.2);
+            }
+        }
+
+        .launch-trail {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            pointer-events: none;
+            filter: blur(2px) brightness(1.5);
+            mix-blend-mode: screen;
+            animation: trail 1.2s ease-out forwards;
+            opacity: 0.8;
+        }
+
+        @keyframes trail {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 0.6;
+            }
+            100% {
+                transform: translate(var(--tx), var(--ty)) scale(0);
+                opacity: 0;
+            }
+        }
+        
+        .tools {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            display: flex;
+            gap: 15px;
+            padding: 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .pure-button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
             color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(255, 77, 79, 0.5);
+        }
+        
+        .pure-button:hover {
+            transform: translateY(-2px);
+            background: rgba(255, 77, 79, 0.7);
+        }
+        
+        .button-success { background: rgba(255, 77, 79, 0.8); }
+        .button-error { background: rgba(255, 77, 79, 0.6); }
+        .button-warning { background: rgba(255, 77, 79, 0.5); }
+        .button-secondary { background: rgba(255, 77, 79, 0.7); }
+        
+        .result-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+        }
+        
+        .result-btn a {
+            display: inline-block;
+            padding: 12px 24px;
+            background: rgba(255, 77, 79, 0.5);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+        
+        .result-btn a:hover {
+            background: rgba(255, 77, 79, 0.7);
+            transform: translateY(-2px);
+        }
+        
+        .mask {
+            filter: blur(5px);
+        }
+        
+        .lottery-item.highlight {
+            color: #ff4d4f;
+            text-shadow: 0 0 20px rgba(255, 77, 79, 0.8);
+            background: rgba(255, 77, 79, 0.2);
+            border-color: rgba(255, 77, 79, 0.5);
+            font-weight: bold;
+            letter-spacing: 2px;
+            animation: highlightPulse 1s infinite;
+        }
+
+        @keyframes highlightPulse {
+            0%, 100% {
+                transform: scale(1) translateZ(0);
+                box-shadow: 0 0 20px rgba(255, 77, 79, 0.4);
+            }
+            50% {
+                transform: scale(1.1) translateZ(0);
+                box-shadow: 0 0 30px rgba(255, 77, 79, 0.6);
+            }
+        }
+        
+        .music-control {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            z-index: 100;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            padding: 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .music-control button {
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 77, 79, 0.5);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .music-control button:hover {
+            transform: translateY(-2px);
+            background: rgba(255, 77, 79, 0.7);
+        }
+        
+        .music-control button.active {
+            background: rgba(255, 77, 79, 0.8);
+            box-shadow: 0 0 15px rgba(255, 77, 79, 0.5);
+        }
+        
+        .volume-slider {
+            width: 80px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .volume-slider::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            background: rgba(255, 77, 79, 0.8);
+            border-radius: 2px;
+            width: var(--volume, 80%);
+        }
+        
+        .volume-slider::after {
+            content: '';
+            position: absolute;
+            left: var(--volume, 80%);
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 12px;
+            height: 12px;
+            background: #fff;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
         }
     </style>
 </head>
 <body>
+<div id="canvas-container"></div>
 <div id="main" class="wall">
     <div class="result-btn">
-       <a style="color: #E3D380;" href="./result.html" target="_blank">获奖名单</a>
+       <a href="./result.html" target="_blank">查看获奖名单</a>
     </div>
 </div>
 <div id="result" class="result">
+    <div class="result-content"></div>
 </div>
+
 <div id="tools" class="tools">
-     <button
+    <button
         v-for="value in btns"
         @click="onClick(value)"
         class="pure-button"
         :class="{ 'button-error': selected == value}"
-       >{{value}}</button>
+    >{{value}}人</button>
     <button
        class="pure-button"
        @click="toggle"
        :class="{'button-secondary': !running,
-               'button-success': running}">{{running?'停!':'开始'}}</button>
-    <button class="pure-button button-warning" @click="reset">重置</button>
+               'button-success': running}"
+    >{{running?'停止抽奖':'开始抽奖'}}</button>
+    <button class="pure-button button-warning" @click="reset">重置名单</button>
 </div>
+
+<div class="music-control">
+    <button id="bgmControl" title="背景音乐">♫</button>
+    <div class="volume-slider" id="volumeSlider"></div>
+</div>
+
+<audio id="bgMusic" loop>
+    <source src="audio/background.mp3" type="audio/mpeg">
+</audio>
+<audio id="spinMusic" loop>
+    <source src="audio/spin.mp3" type="audio/mpeg">
+</audio>
+<audio id="fireworkSound">
+    <source src="audio/afirework.mp3" type="audio/mpeg">
+</audio>
+
 <script type="text/javascript" src="js/zepto.js"></script>
 <script type="text/javascript" src="js/vue.js"></script>
-<script type="text/javascript" src="js/tagcanvas.js"></script>
 <script type="text/javascript" src="js/member.js"></script>
 <script type="text/javascript">
     (function(){
         var choosed = JSON.parse(localStorage.getItem('choosed')) || {};
-        console.log(choosed);
-        var speed = function(){
-            return [0.1 * Math.random() + 0.01, -(0.1 * Math.random() + 0.01)];
-        };
         var getKey = function(item){
             return item.name + '-' + item.phone;
         };
-        var createHTML = function(){
-            var html = [ '<ul>' ];
-            member.forEach(function(item, index){
-                item.index = index;
-                var key = getKey(item);
-                var color = choosed[key] ? 'yellow' : 'white';
-                html.push('<li><a href="#" style="color: ' + color + ';">' + item.name + '</a></li>');
+        
+        // Three.js 场景设置
+        var scene = new THREE.Scene();
+        var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        var renderer = new THREE.WebGLRenderer({ 
+            antialias: true, 
+            alpha: true,
+            preserveDrawingBuffer: true
+        });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0x000000, 0);
+        document.getElementById('canvas-container').appendChild(renderer.domElement);
+        
+        // 创建粒子系统
+        var particles = [];
+        var particleSystem;
+        var rotationSpeed = 0.005;
+        var maxRotationSpeed = 0.12;
+        var minRotationSpeed = 0.001;
+        var isSpinning = false;
+        var lineMaterial, lineMaterial2;
+        var time = 0;
+        var breathingScale = 1;
+        var speedWaveTime = 0;
+        var speedPattern = 0;
+        
+        // 音频控制相关变量
+        var bgMusic = document.getElementById('bgMusic');
+        var spinMusic = document.getElementById('spinMusic');
+        var fireworkSound = document.getElementById('fireworkSound');
+        var bgmControl = document.getElementById('bgmControl');
+        var volumeSlider = document.getElementById('volumeSlider');
+        var globalVolume = 0.8;
+        var currentMusic = bgMusic;
+        
+        // 初始化音量
+        [bgMusic, spinMusic, fireworkSound].forEach(function(audio) {
+            audio.volume = globalVolume;
+        });
+        volumeSlider.style.setProperty('--volume', (globalVolume * 100) + '%');
+        
+        // 尝试自动播放音乐
+        function tryPlayMusic() {
+            bgMusic.play().then(function() {
+                bgmControl.classList.add('active');
+                currentMusic = bgMusic;
+            }).catch(function(error) {
+                console.log('Autoplay failed, waiting for user interaction');
+                // 添加点击事件监听器
+                document.addEventListener('click', function initAudio() {
+                    bgMusic.play().then(function() {
+                        bgmControl.classList.add('active');
+                        currentMusic = bgMusic;
+                    });
+                    document.removeEventListener('click', initAudio);
+                }, { once: true });
             });
-            html.push('</ul>');
-            return html.join('');
-        };
+        }
+        
+        // 页面加载完成后尝试播放
+        window.addEventListener('load', tryPlayMusic);
+        
+        // 音量控制
+        volumeSlider.addEventListener('click', function(e) {
+            var rect = this.getBoundingClientRect();
+            var x = e.clientX - rect.left;
+            var percentage = Math.max(0, Math.min(1, x / rect.width));
+            globalVolume = percentage;
+            
+            [bgMusic, spinMusic, fireworkSound].forEach(function(audio) {
+                audio.volume = globalVolume;
+            });
+            volumeSlider.style.setProperty('--volume', (percentage * 100) + '%');
+        });
+        
+        // 音乐切换函数
+        function switchMusic(from, to, fadeTime = 1000) {
+            if (from) {
+                var fromVol = from.volume;
+                var fadeOutInterval = setInterval(function() {
+                    fromVol = Math.max(0, fromVol - 0.05);
+                    from.volume = fromVol;
+                    if (fromVol <= 0) {
+                        clearInterval(fadeOutInterval);
+                        from.pause();
+                        from.currentTime = 0;
+                        from.volume = globalVolume;
+                    }
+                }, fadeTime / 20);
+            }
+            
+            if (to) {
+                to.volume = 0;
+                to.play();
+                var toVol = 0;
+                var fadeInInterval = setInterval(function() {
+                    toVol = Math.min(globalVolume, toVol + 0.05);
+                    to.volume = toVol;
+                    if (toVol >= globalVolume) {
+                        clearInterval(fadeInInterval);
+                    }
+                }, fadeTime / 20);
+                currentMusic = to;
+            }
+        }
+        
+        // 背景音乐控制
+        bgmControl.addEventListener('click', function() {
+            if (currentMusic.paused) {
+                currentMusic.play();
+                this.classList.add('active');
+            } else {
+                currentMusic.pause();
+                this.classList.remove('active');
+            }
+        });
+        
+        function createParticleSystem() {
+            var geometry = new THREE.BufferGeometry();
+            var positions = [];
+            var colors = [];
+            var sizes = [];
+            var alphas = [];
+            
+            var color = new THREE.Color();
+            var radius = Math.min(window.innerWidth, window.innerHeight) * 0.25;
+            
+            // 创建辅助线条
+            var lineGeometry = new THREE.BufferGeometry();
+            var linePositions = [];
+            var lineCount = 12;
+            
+            // 添加经线
+            for(var i = 0; i < lineCount; i++) {
+                var angle = (i / lineCount) * Math.PI * 2;
+                for(var j = 0; j <= 50; j++) {
+                    var phi = (j / 50) * Math.PI;
+                    var x = radius * Math.sin(phi) * Math.cos(angle);
+                    var y = radius * Math.cos(phi);
+                    var z = radius * Math.sin(phi) * Math.sin(angle);
+                    linePositions.push(x, y, z);
+                }
+            }
+            
+            // 添加纬线
+            for(var i = 1; i < lineCount; i++) {
+                var phi = (i / lineCount) * Math.PI;
+                for(var j = 0; j <= 50; j++) {
+                    var angle = (j / 50) * Math.PI * 2;
+                    var x = radius * Math.sin(phi) * Math.cos(angle);
+                    var y = radius * Math.cos(phi);
+                    var z = radius * Math.sin(phi) * Math.sin(angle);
+                    linePositions.push(x, y, z);
+                }
+            }
+            
+            lineGeometry.setAttribute('position', new THREE.Float32BufferAttribute(linePositions, 3));
+            lineMaterial = new THREE.LineBasicMaterial({
+                color: 0xffd700,
+                transparent: true,
+                opacity: 0.3,
+                blending: THREE.AdditiveBlending
+            });
+            
+            lineMaterial2 = new THREE.LineBasicMaterial({
+                color: 0xffd700,
+                transparent: true,
+                opacity: 0.1,
+                blending: THREE.AdditiveBlending
+            });
+            
+            // 创建两层线条
+            var lines1 = new THREE.LineSegments(lineGeometry, lineMaterial);
+            var lines2 = new THREE.LineSegments(lineGeometry, lineMaterial2);
+            lines2.scale.multiplyScalar(1.01);
+            
+            scene.add(lines1);
+            scene.add(lines2);
+            
+            // 创建粒子
+            for(var i = 0; i < member.length; i++) {
+                var phi = Math.acos(-1 + (2 * i) / member.length);
+                var theta = Math.sqrt(member.length * Math.PI) * phi;
+                
+                var x = radius * Math.cos(theta) * Math.sin(phi);
+                var y = radius * Math.sin(theta) * Math.sin(phi);
+                var z = radius * Math.cos(phi);
+                
+                positions.push(x, y, z);
+                
+                var key = getKey(member[i]);
+                if(choosed[key]) {
+                    color.setHSL(0.15, 1.0, 0.6); // 金色
+                } else {
+                    color.setHSL(0, 0.8, 0.6); // 红色
+                }
+                
+                colors.push(color.r, color.g, color.b);
+                sizes.push(4);
+                alphas.push(0.8);
+                
+                var div = document.createElement('div');
+                div.className = 'lottery-item' + (choosed[key] ? ' selected' : '');
+                div.textContent = member[i].name;
+                document.body.appendChild(div);
+                
+                particles.push({
+                    position: new THREE.Vector3(x, y, z),
+                    element: div,
+                    index: i,
+                    line1: lines1,
+                    line2: lines2
+                });
+            }
+            
+            geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+            geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+            geometry.setAttribute('size', new THREE.Float32BufferAttribute(sizes, 1));
+            geometry.setAttribute('alpha', new THREE.Float32BufferAttribute(alphas, 1));
+            
+            var material = new THREE.PointsMaterial({
+                size: 4,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.8,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
+            });
+            
+            particleSystem = new THREE.Points(geometry, material);
+            scene.add(particleSystem);
+            
+            // 添加环境光和点光源
+            var ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
+            scene.add(ambientLight);
+            
+            var pointLight = new THREE.PointLight(0xff4d4f, 1.5, 1000); // 增加光照强度
+            pointLight.position.set(0, 0, 200);
+            scene.add(pointLight);
+            
+            // 添加第二个点光源
+            var pointLight2 = new THREE.PointLight(0xffd700, 1, 1000);
+            pointLight2.position.set(200, 200, 200);
+            scene.add(pointLight2);
+        }
+        
+        // 更新粒子位置和HTML元素位置
+        function updateParticles() {
+            time += 0.016;
+            speedWaveTime += 0.016;
+            
+            // 更新呼吸效果
+            if (isSpinning) {
+                breathingScale = 1 + Math.sin(time * 3) * 0.05;
+            } else {
+                breathingScale = 1;
+            }
+            
+            // 更新旋转速度，添加多个速度阶段
+            if (isSpinning) {
+                // 使用多个正弦波叠加创造复杂的速度变化
+                var fastWave = Math.sin(speedWaveTime * 0.5) * Math.cos(speedWaveTime * 0.3);
+                var slowWave = Math.sin(speedWaveTime * 0.2) * Math.cos(speedWaveTime * 0.1);
+                var microWave = Math.sin(speedWaveTime * 2) * 0.1; // 添加快速微小波动
+                
+                // 计算基础速度
+                var baseSpeed = 0.3 + Math.sin(speedWaveTime * 0.1) * 0.2; // 基础速度缓慢变化
+                
+                // 合成最终速度
+                var targetSpeed = maxRotationSpeed * (
+                    baseSpeed + // 基础速度分量
+                    fastWave * 0.3 + // 快速波动分量
+                    slowWave * 0.4 + // 慢速波动分量
+                    microWave // 微小波动分量
+                );
+                
+                // 确保速度在合理范围内
+                targetSpeed = Math.max(minRotationSpeed * 2, Math.min(maxRotationSpeed, targetSpeed));
+                
+                // 速度平滑过渡
+                rotationSpeed += (targetSpeed - rotationSpeed) * 0.03;
+                
+                // 随机添加短暂的慢速阶段
+                if (Math.random() < 0.002) { // 有0.2%的概率进入慢速
+                    speedPattern = 1;
+                    setTimeout(function() {
+                        speedPattern = 0;
+                    }, 500 + Math.random() * 1000); // 慢速持续0.5-1.5秒
+                }
+                
+                // 如果在慢速模式，降低目标速度
+                if (speedPattern === 1) {
+                    rotationSpeed = Math.max(minRotationSpeed * 3, rotationSpeed * 0.95);
+                }
+            } else {
+                rotationSpeed = Math.max(rotationSpeed - 0.001, minRotationSpeed);
+            }
+            
+            // 获取当前选中的抽奖人数
+            var currentSelected = window.currentLotteryCount || 0;
+            
+            // 计算高亮频率，与转速相关，但在慢速时稍微提高以保持视觉效果
+            var highlightFrequency = rotationSpeed * (speedPattern === 1 ? 150 : 100);
+            
+            particles.forEach(function(particle, index) {
+                // 多轴旋转，与主旋转速度同步
+                var rotationMatrix = new THREE.Matrix4();
+                rotationMatrix.makeRotationY(rotationSpeed);
+                if (isSpinning) {
+                    var wobbleAmount = rotationSpeed / maxRotationSpeed; // 摆动幅度随速度变化
+                    rotationMatrix.multiply(new THREE.Matrix4().makeRotationX(Math.sin(time * 0.5) * 0.02 * wobbleAmount));
+                    rotationMatrix.multiply(new THREE.Matrix4().makeRotationZ(Math.cos(time * 0.3) * 0.01 * wobbleAmount));
+                }
+                
+                particle.position.applyMatrix4(rotationMatrix);
+                
+                // 应用呼吸效果
+                var scaledPosition = particle.position.clone().multiplyScalar(breathingScale);
+                
+                particleSystem.geometry.attributes.position.array[particle.index * 3] = scaledPosition.x;
+                particleSystem.geometry.attributes.position.array[particle.index * 3 + 1] = scaledPosition.y;
+                particleSystem.geometry.attributes.position.array[particle.index * 3 + 2] = scaledPosition.z;
+                
+                // 粒子闪烁效果，与转速同步
+                if (isSpinning) {
+                    var flicker = 0.8 + Math.sin(time * highlightFrequency + index) * 0.2;
+                    particleSystem.geometry.attributes.size.array[index] = 4 * flicker;
+                }
+                
+                // 更新辅助线位置，添加波浪效果
+                var waveOffset = isSpinning ? Math.sin(time * highlightFrequency * 0.2) * 0.1 : 0;
+                particle.line1.rotation.y += rotationSpeed + waveOffset;
+                particle.line2.rotation.y += rotationSpeed * 0.95 - waveOffset;
+                
+                var vector = scaledPosition.clone();
+                vector.project(camera);
+                
+                var x = (vector.x * 0.5 + 0.5) * window.innerWidth;
+                var y = (-vector.y * 0.5 + 0.5) * window.innerHeight;
+                
+                var key = getKey(member[particle.index]);
+                var isSelected = choosed[key];
+                var scale = (1 - Math.abs(vector.z) * 0.2) * breathingScale;
+                
+                // 检查是否应该高亮显示，使用与转速相关的频率
+                var shouldHighlight = false;
+                if (isSpinning && !isSelected && currentSelected > 0) {
+                    // 使用索引来确保只有固定数量的名字会被高亮
+                    var highlightIndex = Math.floor(time * highlightFrequency * 0.5) % member.length;
+                    var highlightWindow = currentSelected; // 高亮窗口大小等于选中人数
+                    
+                    // 计算当前名字是否在高亮窗口内
+                    var distance = Math.min(
+                        Math.abs(index - highlightIndex),
+                        Math.abs(index - highlightIndex + member.length),
+                        Math.abs(index - highlightIndex - member.length)
+                    );
+                    
+                    shouldHighlight = distance < highlightWindow;
+                }
+                
+                // 更新高亮状态
+                if (shouldHighlight) {
+                    if (!particle.element.classList.contains('highlight')) {
+                        particle.element.classList.add('highlight');
+                    }
+                } else {
+                    if (particle.element.classList.contains('highlight')) {
+                        particle.element.classList.remove('highlight');
+                    }
+                }
+                
+                // 调整缩放比例，与转速相关
+                var pulseSpeed = highlightFrequency;
+                var finalScale = isSelected ? 
+                    scale * (1.2 + (isSpinning ? Math.sin(time * pulseSpeed * 0.5) * 0.1 : 0)) : 
+                    shouldHighlight ? 
+                        scale * (1.1 + Math.sin(time * pulseSpeed) * 0.1) : 
+                        scale;
+                
+                particle.element.style.transform = `translate(${x}px, ${y}px) scale(${finalScale})`;
+                
+                // 调整透明度，与转速相关
+                if(vector.z < 1) {
+                    if(!particle.element.classList.contains('show')) {
+                        particle.element.classList.add('show');
+                    }
+                    var baseOpacity = 1 - Math.abs(vector.z) * 0.3;
+                    var flickerOpacity = isSpinning ? 
+                        0.8 + Math.sin(time * highlightFrequency + index) * 0.2 : 1;
+                    var finalOpacity = isSelected ? 
+                        Math.max(0.8, baseOpacity * flickerOpacity) : 
+                        shouldHighlight ?
+                            Math.max(0.9, baseOpacity * flickerOpacity) :
+                            Math.max(0.6, baseOpacity * flickerOpacity);
+                    
+                    particle.element.style.opacity = finalOpacity;
+                } else {
+                    if(particle.element.classList.contains('show')) {
+                        particle.element.classList.remove('show');
+                    }
+                }
+            });
+            
+            // 更新辅助线材质效果，与转速相关
+            var pulseOpacity = 0.3 + Math.sin(time * highlightFrequency) * 0.1;
+            lineMaterial.opacity = isSpinning ? pulseOpacity : 0.3;
+            lineMaterial2.opacity = isSpinning ? (0.1 + Math.sin(time * highlightFrequency + Math.PI) * 0.05) : 0.1;
+            
+            particleSystem.geometry.attributes.position.needsUpdate = true;
+            particleSystem.geometry.attributes.size.needsUpdate = true;
+            
+            // 根据转速调整音乐效果
+            if (isSpinning && spinMusic) {
+                var speedRatio = rotationSpeed / maxRotationSpeed;
+                spinMusic.playbackRate = 0.9 + speedRatio * 0.2; // 减小播放速率变化范围
+                spinMusic.volume = globalVolume * (0.8 + speedRatio * 0.2); // 增加基础音量
+            }
+        }
+        
+        // 动画循环
+        function animate() {
+            requestAnimationFrame(animate);
+            updateParticles();
+            renderer.render(scene, camera);
+        }
+        
+        // 初始化场景
+        camera.position.z = 600;
+        scene.fog = new THREE.Fog(0x000000, 200, 1000);
+        createParticleSystem();
+        animate();
+        
+        // 窗口大小改变时更新渲染器大小
+        window.addEventListener('resize', function() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+        
+        // 保留原有的抽奖逻辑
         var lottery = function(count){
-            var list = canvas.getElementsByTagName('a');
-            var color = 'yellow';
             var ret = member
                 .filter(function(m, index){
                     m.index = index;
@@ -204,40 +889,178 @@
                 })
                 .slice(0, count)
                 .map(function(m){
-                  choosed[getKey(m)] = 1;
-                  list[m.index].style.color = color;
-                  return m.name + '<br/>' + m.phone; 
+                    choosed[getKey(m)] = 1;
+                    var particle = particles[m.index];
+                    particle.element.classList.add('selected');
+                    
+                    var color = new THREE.Color();
+                    color.setHSL(0.15, 1.0, 0.6);
+                    particleSystem.geometry.attributes.color.array[m.index * 3] = color.r;
+                    particleSystem.geometry.attributes.color.array[m.index * 3 + 1] = color.g;
+                    particleSystem.geometry.attributes.color.array[m.index * 3 + 2] = color.b;
+                    particleSystem.geometry.attributes.color.needsUpdate = true;
+                    
+                    return '<div class="winner" style="animation-delay: ' + (Math.random() * 0.3) + 's">' + 
+                           m.name + '<br/>' + m.phone + '</div>'; 
                 });
+            
             localStorage.setItem('choosed', JSON.stringify(choosed));
+            
+            if(ret.length === 0) {
+                alert('已经没有可抽取的名额了！');
+                return [];
+            }
+
+            // 创建烟花效果
+            function createFirework(targetX, targetY) {
+                var colors = [
+                    'rgba(255, 215, 0, 0.95)',  // 金色
+                    'rgba(255, 77, 79, 0.95)',  // 红色
+                    'rgba(255, 105, 180, 0.95)', // 粉色
+                    'rgba(0, 255, 127, 0.95)',   // 翠绿
+                    'rgba(30, 144, 255, 0.95)'   // 蓝色
+                ];
+                var color = colors[Math.floor(Math.random() * colors.length)];
+                
+                // 计算发射起点（底部随机位置）
+                var startX = targetX + (Math.random() - 0.5) * 200;
+                var startY = window.innerHeight + 20;
+                
+                // 创建发射轨迹
+                var trailCount = 15;
+                var trailDelay = 1200 / trailCount;
+                for (var i = 0; i < trailCount; i++) {
+                    setTimeout(function() {
+                        var trail = document.createElement('div');
+                        trail.className = 'launch-trail';
+                        trail.style.left = startX + 'px';
+                        trail.style.top = startY + 'px';
+                        trail.style.backgroundColor = color;
+                        
+                        var progress = i / trailCount;
+                        var currentX = startX + (targetX - startX) * progress;
+                        var currentY = startY + (targetY - startY) * progress;
+                        
+                        trail.style.setProperty('--tx', (currentX - startX) + 'px');
+                        trail.style.setProperty('--ty', (currentY - startY) + 'px');
+                        
+                        document.body.appendChild(trail);
+                        setTimeout(function() {
+                            trail.remove();
+                        }, 1200);
+                    }, i * trailDelay);
+                }
+
+                // 创建主烟花
+                var firework = document.createElement('div');
+                firework.className = 'firework';
+                firework.style.left = startX + 'px';
+                firework.style.top = startY + 'px';
+                firework.style.backgroundColor = color;
+                firework.style.color = color;
+                
+                firework.style.setProperty('--tx', (targetX - startX) + 'px');
+                firework.style.setProperty('--ty', (targetY - startY) + 'px');
+                
+                document.body.appendChild(firework);
+
+                // 创建爆炸粒子
+                setTimeout(function() {
+                    var particleCount = 80; // 增加粒子数量
+                    for (var i = 0; i < particleCount; i++) {
+                        var particle = document.createElement('div');
+                        particle.className = 'particle';
+                        particle.style.left = targetX + 'px';
+                        particle.style.top = targetY + 'px';
+                        particle.style.backgroundColor = color;
+                        particle.style.color = color;
+                        
+                        var angle = (i / particleCount) * Math.PI * 2;
+                        var velocity = 150 + Math.random() * 150; // 增加扩散范围
+                        var tx = Math.cos(angle) * velocity;
+                        var ty = Math.sin(angle) * velocity;
+                        
+                        // 增加随机偏移
+                        tx += (Math.random() - 0.5) * 80;
+                        ty += (Math.random() - 0.5) * 80;
+                        
+                        particle.style.setProperty('--tx', tx + 'px');
+                        particle.style.setProperty('--ty', ty + 'px');
+                        
+                        particle.style.animationDelay = (Math.random() * 0.3) + 's';
+                        
+                        document.body.appendChild(particle);
+                        
+                        setTimeout(function(el) {
+                            el.remove();
+                        }, 2000, particle);
+                    }
+                }, 1200); // 等待发射完成后爆炸
+
+                setTimeout(function() {
+                    firework.remove();
+                }, 2000);
+
+                // 播放烟花音效
+                var newFireworkSound = new Audio('audio/afirework.mp3');
+                newFireworkSound.volume = globalVolume * 0.4;
+                newFireworkSound.play();
+                
+                // 自动清理音频实例
+                setTimeout(function() {
+                    newFireworkSound = null;
+                }, 2000);
+            }
+
+            // 显示结果时触发烟花
+            setTimeout(function() {
+                var resultBox = document.getElementById('result');
+                resultBox.classList.add('show');
+                
+                // 创建多个烟花
+                var createRandomFirework = function() {
+                    var targetX = Math.random() * window.innerWidth;
+                    var targetY = window.innerHeight * (0.15 + Math.random() * 0.5); // 扩大爆炸高度范围
+                    createFirework(targetX, targetY);
+                };
+
+                // 初始烟花
+                for(var i = 0; i < 8; i++) { // 增加初始烟花数量
+                    setTimeout(createRandomFirework, i * 400);
+                }
+
+                // 持续创建烟花
+                var fireworkInterval = setInterval(function() {
+                    if(!resultBox.classList.contains('show')) {
+                        clearInterval(fireworkInterval);
+                        return;
+                    }
+                    createRandomFirework();
+                }, 1000);
+
+                // 延长烟花持续时间
+                setTimeout(function() {
+                    clearInterval(fireworkInterval);
+                }, 12000);
+            }, 100);
+            
             return ret;
         };
-        var canvas = document.createElement('canvas');
-        canvas.id = 'myCanvas';
-        canvas.width = document.body.offsetWidth;
-        canvas.height = document.body.offsetHeight;
-        document.getElementById('main').appendChild(canvas);
+        
+        // Vue实例
         new Vue({
             el: '#tools',
             data: {
                 selected: 30,
                 running: false,
-                btns: [
-                    30, 10, 5, 2, 1
-                ]
-            },
-            mounted () {
-                canvas.innerHTML = createHTML();
-                TagCanvas.Start('myCanvas', '', {
-                    textColour: null,
-                    initial: speed(),
-                    dragControl: 1,
-                    textHeight: 14
-                });
+                btns: [30, 10, 5, 2, 1]
             },
             methods: {
                 reset: function(){
-                    if(confirm('确定要重置么？所有之前的抽奖历史将被清除！')){
+                    if(confirm('确定要重置抽奖名单吗？所有之前的抽奖记录将被清除！')){
+                        switchMusic(currentMusic, bgMusic);
                         localStorage.clear();
+                        choosed = {};
                         location.reload(true);
                     }
                 },
@@ -245,27 +1068,50 @@
                     $('#result').css('display', 'none');
                     $('#main').removeClass('mask');
                     this.selected = num;
+                    window.currentLotteryCount = num;
                 },
                 toggle: function(){
                     if(this.running){
-                        TagCanvas.SetSpeed('myCanvas', speed());
+                        // 停止抽奖
+                        this.running = false;
+                        isSpinning = false;
+                        switchMusic(spinMusic, bgMusic); // 切换回背景音乐
                         var ret = lottery(this.selected);
-                        if (ret.length === 0) {
-                            $('#result').css('display', 'block').html('<span>已抽完</span>');
-                            return
-                        }
-                        $('#result').css('display', 'block').html('<span>' + ret.join('</span><span>') + '</span>');
-                        TagCanvas.Reload('myCanvas');
-                        setTimeout(function(){
-                            localStorage.setItem(new Date().toString(), JSON.stringify(ret));
+                        
+                        if (ret && ret.length > 0) {
+                            var timestamp = new Date().getTime();
+                            var winners = ret.map(function(winner) {
+                                return winner.replace(/<br\/>/, ' ').replace(/<\/?[^>]*>/g, '');
+                            });
+                            localStorage.setItem('lottery_' + timestamp, JSON.stringify(winners));
+                            
+                            // 播放中奖音乐
+                            fireworkSound.currentTime = 0;
+                            fireworkSound.volume = globalVolume;
+                            fireworkSound.play();
+                            
+                            $('#result .result-content').html(ret.join(''));
+                            $('#result').css('display', 'block');
                             $('#main').addClass('mask');
-                        }, 300);
+                        }
                     } else {
+                        // 开始抽奖
+                        var availableCount = member.filter(function(m) {
+                            return !choosed[getKey(m)];
+                        }).length;
+                        
+                        if (availableCount < this.selected) {
+                            alert('剩余可抽奖人数不足！仅剩 ' + availableCount + ' 人');
+                            return;
+                        }
+                        
+                        this.running = true;
+                        isSpinning = true;
+                        window.currentLotteryCount = this.selected;
                         $('#result').css('display', 'none');
                         $('#main').removeClass('mask');
-                        TagCanvas.SetSpeed('myCanvas', [5, 1]);
+                        switchMusic(bgMusic, spinMusic); // 切换到抽奖音乐
                     }
-                    this.running = !this.running;
                 }
             }
         });

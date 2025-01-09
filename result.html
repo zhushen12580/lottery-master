@@ -4,87 +4,175 @@
     <meta name="screen-orientation" content="portrait">
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=0"/>
-    <title>年会抽奖小程序</title>
+    <title>2025年东莞市文锋硅胶公司年会抽奖 - 获奖名单</title>
     <link rel="stylesheet" type="text/css" href="css/reset.css">
     <link rel="stylesheet" type="text/css" href="css/wall.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
     <style type="text/css">
-        .wall { 
-            overflow: scroll;
-            background-repeat: repeat;
-        }
-        ::-webkit-scrollbar {
-            display: none;
-        }
         body, html {
             width: 100%;
             height: 100%;
+            font-family: 'Noto Sans SC', sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+            color: #fff;
         }
-        .mask {
-            -webkit-filter:blur(5px);
-            filter:blur(5px);
+        
+        .wall {
+            overflow-y: auto;
+            background: none;
+            padding: 20px;
+            min-height: 100vh;
         }
-        #main {
-            -webkit-transition: all 1s;
-            transition: all 1s;
+        
+        ::-webkit-scrollbar {
+            width: 8px;
+            background: rgba(255, 255, 255, 0.1);
         }
-        .result-list {
-            text-align: center;
-            color: #4de7c8;
-            font-size: 30px;
-            line-height: 50px;
-            margin-top: 50px;
-            margin-bottom: 50px;
-            font-family: '幼圆';
+        
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 0, 0, 0.3);
+            border-radius: 4px;
         }
+        
         .result-title {
             text-align: center;
-            color: #4de7c8;
-            font-size: 40px;
-            margin-top: 100px;
-            font-family: '幼圆';
+            color: #ff4d4f;
+            font-size: 32px;
+            margin: 40px 0;
+            font-weight: 700;
+            text-shadow: 0 0 10px rgba(255, 77, 79, 0.3);
+            animation: titleGlow 2s infinite alternate;
         }
-
+        
+        @keyframes titleGlow {
+            from { text-shadow: 0 0 10px rgba(255, 77, 79, 0.3); }
+            to { text-shadow: 0 0 20px rgba(255, 77, 79, 0.6); }
+        }
+        
+        .result-list {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.1);
+            animation: listGlow 3s infinite alternate;
+        }
+        
+        @keyframes listGlow {
+            from { box-shadow: 0 0 20px rgba(255, 0, 0, 0.1); }
+            to { box-shadow: 0 0 30px rgba(255, 0, 0, 0.2); }
+        }
+        
+        .result-group {
+            margin-bottom: 30px;
+        }
+        
+        .group-title {
+            color: #ff7875;
+            font-size: 24px;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+        
+        .winner-item {
+            font-size: 18px;
+            line-height: 1.8;
+            color: #fff;
+            padding: 8px 15px;
+            margin: 5px 0;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .winner-item:hover {
+            background: rgba(255, 77, 79, 0.1);
+            transform: translateX(5px);
+        }
+        
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background: rgba(255, 77, 79, 0.2);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            backdrop-filter: blur(5px);
+        }
+        
+        .back-btn:hover {
+            background: rgba(255, 77, 79, 0.3);
+            transform: translateY(-2px);
+        }
     </style>
 </head>
 <body>
 <div id="main" class="wall">
-    <div class="result-title">获奖名单</div>
-    <div class="result-list" v-for="result in results">
-        <div v-for="item in result">
-            {{item}}
+    <div class="result-title">2025年东莞市文锋硅胶公司年会抽奖 - 获奖名单</div>
+    <div class="result-list">
+        <div v-for="(group, index) in groupedResults" class="result-group">
+            <div class="group-title">{{ group.count }}人奖 - 第{{ group.round }}轮</div>
+            <div v-for="winner in group.winners" class="winner-item">
+                {{ winner }}
+            </div>
         </div>
     </div>
+    <a href="index.html" class="back-btn">返回抽奖</a>
 </div>
 <script type="text/javascript" src="js/vue.js"></script>
 <script type="text/javascript">
     new Vue({
         el: '#main',
         data: {
-            results: []
+            groupedResults: []
         },
-        mounted () {
-            let vm = this
-            let locals = window.localStorage
-            let str_results = []
-            // 遍历(排除choosed)
-            for(let i = 0; i<localStorage.length; i++){
-                if (localStorage.key(i) !== 'choosed') {
-                    str_results.push(localStorage.getItem(localStorage.key(i)))
+        mounted() {
+            let results = [];
+            // 获取所有抽奖结果
+            for(let i = 0; i < localStorage.length; i++) {
+                let key = localStorage.key(i);
+                if(key.startsWith('lottery_')) {
+                    let winners = JSON.parse(localStorage.getItem(key));
+                    results.push({
+                        timestamp: parseInt(key.split('_')[1]),
+                        winners: winners,
+                        count: winners.length
+                    });
                 }
             }
-            // 分割每个string, 并将</br>换成空格
-            let results = []
-            for(let nameList of str_results) {
-                let temp = JSON.parse(nameList)
-                temp = temp.map(item => {return item.replace('<br/>', ' ')})
-                results.push(temp)
-            }
             
-            // 根据长度进行排序，名单短的放在前面
-            results = results.sort((x, y) => { return x.length - y.length;})
-            this.results = results
-        },
-    })
+            // 按时间戳排序
+            results.sort((a, b) => a.timestamp - b.timestamp);
+            
+            // 对结果进行分组
+            let groupedByCount = {};
+            results.forEach((result, index) => {
+                let count = result.count;
+                if (!groupedByCount[count]) {
+                    groupedByCount[count] = [];
+                }
+                groupedByCount[count].push({
+                    round: groupedByCount[count].length + 1,
+                    winners: result.winners,
+                    count: count
+                });
+            });
+            
+            // 转换为数组格式
+            this.groupedResults = Object.values(groupedByCount)
+                .flat()
+                .sort((a, b) => b.count - a.count || a.round - b.round);
+        }
+    });
 </script>
 </body>
 </html>
